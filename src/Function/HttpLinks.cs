@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace LinkSpace
 {
@@ -35,15 +36,16 @@ namespace LinkSpace
             _log = log;
             log.LogInformation("C# HTTP trigger function processed a request.");
             log.LogInformation(req.QueryString.Value);
+
             string name = req.Query["name"];
             string answer = req.Query["answer"];
 
             if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(answer))
-                return new BadRequestObjectResult("Send data as query -> ?name=yourname&answer=this,is,my,guess");
+                return new BadRequestObjectResult("Send data as query -> name=yourname&answer=this,is,my,guess");
 
             var attempt = new Answer()
             {
-                Id = answer,
+                Id = answer.Trim().ToLower(),
                 Name = name
             };
 
@@ -56,8 +58,20 @@ namespace LinkSpace
             if (wasAddedToDb && attempt.Id == SecretAnswer)
                 return new OkObjectResult("Your answer was accepted... And correct!!! Flag=" + flag);
 
-            if (wasAddedToDb && attempt.Id.Trim().ToLower() != SecretAnswer.Trim().ToLower())
-                return new OkObjectResult("Your answer was accepted... But incorrect, you are welcome to try again!");
+            if (wasAddedToDb)
+            {
+                var attemptArr = attempt.Id.Split(',');
+                var targetArr = SecretAnswer.Split(',');
+
+                //Counts the matches with Zip and Aggregate
+                var countMatch = targetArr.Zip(attemptArr, (ta, att) => ta == att).Aggregate(0, (count, isMatch) => isMatch ? count + 1 : count);
+
+                //If matches exist they get appended to the response
+                var response = countMatch > 0 ? "You matched " + String.Join(',', targetArr.Zip(attemptArr, (tar, att) => tar == att ? tar : "*******")) :
+                //else a default response
+                "Your answer was accepted... But none of the words matched, you are welcome to try again!";
+                return new OkObjectResult(response);
+            }
 
             return new BadRequestObjectResult("Your link couldn't be added.");
         }
