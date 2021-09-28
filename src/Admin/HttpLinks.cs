@@ -6,7 +6,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Cosmos;
-using System.Linq;
 using System.Collections.Generic;
 using CTF_shared;
 using Newtonsoft.Json;
@@ -18,8 +17,6 @@ namespace Admin
         private static string accountKey = Environment.GetEnvironmentVariable("accountKey", EnvironmentVariableTarget.Process);
         private static string databaseName = Environment.GetEnvironmentVariable("databaseName", EnvironmentVariableTarget.Process);
         private static string containerName = Environment.GetEnvironmentVariable("containerName", EnvironmentVariableTarget.Process);
-        private static string SecretAnswer = Environment.GetEnvironmentVariable("secretAnswer", EnvironmentVariableTarget.Process);
-        private static string flag = Environment.GetEnvironmentVariable("flag", EnvironmentVariableTarget.Process);
         private static ILogger _log;
 
         [FunctionName("HttpLinks")]
@@ -47,16 +44,6 @@ namespace Admin
             return new OkObjectResult(json);
         }
 
-        /// <summary>
-        /// Delete the database and dispose of the Cosmos Client instance
-        /// </summary>
-        private static async Task DeleteDatabaseAndCleanupAsync(Database database)
-        {
-            DatabaseResponse databaseResourceResponse = await database.DeleteAsync();
-            // Also valid: await this.cosmosClient.Databases["FamilyDatabase"].DeleteAsync();
-
-            Console.WriteLine("Deleted Database: {0}\n", databaseName);
-        }
         /// <summary>
         /// Runs a query (using Azure Cosmos DB SQL syntax) against the container "all" and retrieves all links.
         /// </summary>
