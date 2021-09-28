@@ -11,7 +11,7 @@ using CTF_shared;
 using Newtonsoft.Json;
 namespace Admin
 {
-    public static class HttpLinks
+    public static class HttpAdmin
     {
         private static string accountEndpoint = Environment.GetEnvironmentVariable("accountEndpoint", EnvironmentVariableTarget.Process);
         private static string accountKey = Environment.GetEnvironmentVariable("accountKey", EnvironmentVariableTarget.Process);
