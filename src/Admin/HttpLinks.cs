@@ -6,19 +6,12 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Cosmos;
-using Newtonsoft.Json;
 using System.Linq;
 using System.Collections.Generic;
-
-namespace LinkSpace
+using CTF_shared;
+using Newtonsoft.Json;
+namespace Admin
 {
-    public class Answer
-    {
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public override string ToString() => JsonConvert.SerializeObject(this);
-    }
     public static class HttpLinks
     {
         private static string accountEndpoint = Environment.GetEnvironmentVariable("accountEndpoint", EnvironmentVariableTarget.Process);
@@ -38,64 +31,31 @@ namespace LinkSpace
             log.LogInformation("C# HTTP trigger function processed a request.");
             log.LogInformation(req.QueryString.Value);
 
-            string name = req.Query["name"];
-            string answer = req.Query["answer"];
-
-            if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(answer))
-                return new BadRequestObjectResult("Send data as query -> name=yourname&answer=this,is,my,guess");
-
-            var attempt = new Answer()
-            {
-                Id = answer.Trim().ToLower(),
-                Name = name
-            };
+            string cmd = req.Query["cmd"];
 
             CosmosClient cosmosClient = new CosmosClient(accountEndpoint, accountKey);
             Database database = await cosmosClient.CreateDatabaseIfNotExistsAsync(databaseName);
             Container container = await database.CreateContainerIfNotExistsAsync(containerName, "/Name");
 
-            bool wasAddedToDb = await TryAddAnswer(attempt, container);
-
-            if (wasAddedToDb && attempt.Id == SecretAnswer)
-                return new OkObjectResult("Your answer was accepted... And correct!!! Flag=" + flag);
-
-            if (wasAddedToDb)
+            if (cmd == "delete")
             {
-                var attemptArr = attempt.Id.Split(',');
-                var targetArr = SecretAnswer.Split(',');
-
-                //Counts the matches with Zip and Aggregate
-                var countMatch = targetArr.Zip(attemptArr, (ta, att) => ta == att).Aggregate(0, (count, isMatch) => isMatch ? count + 1 : count);
-
-                //If matches exist they get appended to the response
-                var response = countMatch > 0 ? "You matched " + String.Join(',', targetArr.Zip(attemptArr, (tar, att) => tar == att ? tar : "*******")) :
-                //else a default response
-                "Your answer was accepted... But none of the words matched, you are welcome to try again!";
-                return new OkObjectResult(response);
+                await database.DeleteAsync();
+                return new OkObjectResult("Database deleted");
             }
-
-            return new BadRequestObjectResult("Your link couldn't be added.");
+            var answers = await GetAllAnswersAsync(container);
+            var json = JsonConvert.SerializeObject(answers);
+            return new OkObjectResult(json);
         }
 
         /// <summary>
-        /// Checks if item already exist with id and partition key.
-        /// If it does not exist it creates the item in the container.
+        /// Delete the database and dispose of the Cosmos Client instance
         /// </summary>
-        /// <param name="answer">An Answer object</param>
-        /// <param name="container">Database Container</param>
-        /// <returns>Returns true if it was added, false if it wasn't.</returns>
-        private static async Task<bool> TryAddAnswer(Answer answer, Container container)
+        private static async Task DeleteDatabaseAndCleanupAsync(Database database)
         {
-            try
-            {
-                await container.ReadItemAsync<Answer>(answer.Id, new PartitionKey(answer.Name));
-            }
-            catch (CosmosException ex)//Exception will never be useful in this case if not specified with a "when" statement.
-            {
-                await container.CreateItemAsync<Answer>(answer, new PartitionKey(answer.Name));
-                return true;
-            }
-            return false;
+            DatabaseResponse databaseResourceResponse = await database.DeleteAsync();
+            // Also valid: await this.cosmosClient.Databases["FamilyDatabase"].DeleteAsync();
+
+            Console.WriteLine("Deleted Database: {0}\n", databaseName);
         }
         /// <summary>
         /// Runs a query (using Azure Cosmos DB SQL syntax) against the container "all" and retrieves all links.

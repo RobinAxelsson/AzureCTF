@@ -6,19 +6,12 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Cosmos;
-using Newtonsoft.Json;
 using System.Linq;
 using System.Collections.Generic;
+using CTF_shared;
 
 namespace LinkSpace
 {
-    public class Answer
-    {
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public override string ToString() => JsonConvert.SerializeObject(this);
-    }
     public static class HttpLinks
     {
         private static string accountEndpoint = Environment.GetEnvironmentVariable("accountEndpoint", EnvironmentVariableTarget.Process);
