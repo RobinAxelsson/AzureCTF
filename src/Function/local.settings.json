@@ -11,15 +11,11 @@
     "accountKey": "@Microsoft.KeyVault(SecretUri=https://linkmanagement.vault.azure.net/secrets/accountKey/66cfba1263ac410d80a34f3dff02126b)",
     "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=0890d1a9-020c-499d-a54c-c89fb8dd9a48;IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/",
     "WEBSITE_MOUNT_ENABLED": "1",
-    "test1": "55",
-    "TEST": "TEST",
     "accountEndpoint": "@Microsoft.KeyVault(SecretUri=https://linkmanagement.vault.azure.net/secrets/accountEndpoint/acdb9d5d6826482c8e7a99c66bb5d587)",
     "containerName": "@Microsoft.KeyVault(SecretUri=https://linkmanagement.vault.azure.net/secrets/containerName/158217794f9c404580c34c07536164b9)",
     "flag": "@Microsoft.KeyVault(SecretUri=https://linkmanagement.vault.azure.net/secrets/flag/cfd88a64545b4ffd9e337f31d1ba7baf)",
     "secretAnswer": "@Microsoft.KeyVault(SecretUri=https://linkmanagement.vault.azure.net/secrets/secretAnswer/428844de36f34dbba09c2c8c48cf6d26)",
-    "databaseName": "@Microsoft.KeyVault(SecretUri=https://linkmanagement.vault.azure.net/secrets/databaseName/5cb310fd200340eea43b4ed512a1e5ff)",
-    "SuperSecret": "@Microsoft.KeyVault(SecretUri=https://linkmanagement.vault.azure.net/secrets/SuperSecret/721b55f64f8d407a953dcee399fe99eb)",
-    "Says": "@Microsoft.KeyVault(SecretUri=https://linkmanagement.vault.azure.net/secrets/Says/110ce81f102d4a3ca3e623358f034387)"
+    "databaseName": "@Microsoft.KeyVault(SecretUri=https://linkmanagement.vault.azure.net/secrets/databaseName/5cb310fd200340eea43b4ed512a1e5ff)"
   },
   "ConnectionStrings": {}
 }
