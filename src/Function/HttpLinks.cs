@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Cosmos;
 using System.Linq;
 using System.Collections.Generic;
-using CTF_shared;
 
 namespace LinkSpace
 {
@@ -24,7 +23,7 @@ namespace LinkSpace
 
         [FunctionName("HttpLinks")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
             _log = log;

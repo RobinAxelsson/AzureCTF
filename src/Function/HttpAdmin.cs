@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Cosmos;
 using System.Collections.Generic;
-using CTF_shared;
 using Newtonsoft.Json;
-namespace Admin
+
+namespace LinkSpace
 {
     public static class HttpAdmin
     {
@@ -19,9 +19,9 @@ namespace Admin
         private static string containerName = Environment.GetEnvironmentVariable("containerName", EnvironmentVariableTarget.Process);
         private static ILogger _log;
 
-        [FunctionName("HttpLinks")]
+        [FunctionName("HttpAdmin")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             _log = log;

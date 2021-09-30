@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CTF_shared
+namespace LinkSpace
 {
     public class Answer
     {

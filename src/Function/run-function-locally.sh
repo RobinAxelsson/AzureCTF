@@ -18,5 +18,4 @@ export containerName=$(cat .secrets/containerName.secret)
 export secretAnswer=$(cat .secrets/secretAnswer.secret)
 export flag=$(cat .secrets/flag.secret)
 
-cd ./src/Function
 func start --csharp

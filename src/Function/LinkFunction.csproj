@@ -16,7 +16,4 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="../Shared/CTF-Shared.csproj" />
-  </ItemGroup>
 </Project>
