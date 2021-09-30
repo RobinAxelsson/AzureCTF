@@ -52,21 +52,22 @@ namespace LinkSpace
                 return new OkObjectResult("Your answer was accepted... And correct!!! Flag=" + flag);
 
             if (wasAddedToDb)
-            {
-                var attemptArr = attempt.Id.Split(',');
-                var targetArr = SecretAnswer.Split(',');
-
-                //Counts the matches with Zip and Aggregate
-                var countMatch = targetArr.Zip(attemptArr, (ta, att) => ta == att).Aggregate(0, (count, isMatch) => isMatch ? count + 1 : count);
-
-                //If matches exist they get appended to the response
-                var response = countMatch > 0 ? "You matched " + String.Join(',', targetArr.Zip(attemptArr, (tar, att) => tar == att ? tar : "*******")) :
-                //else a default response
-                "Your answer was accepted... But none of the words matched, you are welcome to try again!";
-                return new OkObjectResult(response);
-            }
+                return new OkObjectResult(ParseAttempt(attempt.Id, SecretAnswer));
 
             return new BadRequestObjectResult("Your link couldn't be added.");
+        }
+        public static string ParseAttempt(string attemptId, string secretAnswer)
+        {
+            var attemptArr = attemptId.Split(',');
+            var targetArr = SecretAnswer.Split(',');
+
+            //Counts the matches with Zip and Aggregate
+            var countMatch = targetArr.Zip(attemptArr, (ta, att) => ta == att).Aggregate(0, (count, isMatch) => isMatch ? count + 1 : count);
+
+            //If matches exist they get appended to the response
+            return countMatch > 0 ? "You matched " + String.Join(',', targetArr.Zip(attemptArr, (tar, att) => tar == att ? tar : "*******")) :
+             //else a default response
+             "Your answer was accepted... But none of the words matched, you are welcome to try again!";
         }
 
         /// <summary>
